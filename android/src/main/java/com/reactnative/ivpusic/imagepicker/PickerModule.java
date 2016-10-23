@@ -534,7 +534,8 @@ public class PickerModule extends ReactContextBaseJavaModule implements Activity
     }
 
     @Override
-    public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        Activity activity = getCurrentActivity();
         if (requestCode == IMAGE_PICKER_REQUEST) {
             imagePickerResult(activity, requestCode, resultCode, data);
         } else if (requestCode == CAMERA_PICKER_REQUEST) {
