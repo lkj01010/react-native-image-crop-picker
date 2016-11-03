@@ -288,7 +288,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../example/node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/QBImagePicker/**/**",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "";
@@ -311,7 +311,7 @@
 					"$(inherited)",
 					"$(SRCROOT)/../example/node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../../../node_modules/react-native/React/**",
 					"$(SRCROOT)/QBImagePicker/**/**",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "";
