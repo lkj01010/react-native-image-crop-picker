@@ -379,7 +379,25 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
                      options:options
                      resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                          UIImage *image = [UIImage imageWithData:imageData];
-                         NSData *data = UIImageJPEGRepresentation(image, 1);
+                         int pixels = image.size.height * image.size.width;
+                         float ratio = 1;
+                         if (pixels <= 1000000) {
+                             ratio = 0.9;
+                         } else {
+                             ratio = 1000000/pixels;
+                         }
+                         NSData *data = UIImageJPEGRepresentation(image, ratio);
+//                         NSData *data2 = UIImageJPEGRepresentation(image, 0.9);
+//                         NSData *data3 = UIImageJPEGRepresentation(image, 0.8);
+//                         NSData *data4 = UIImageJPEGRepresentation(image, 0.7);
+//                         NSData *data5 = UIImageJPEGRepresentation(image, 0.6);
+//                         NSData *data6 = UIImageJPEGRepresentation(image, 0.5);
+//                         NSData *data7 = UIImageJPEGRepresentation(image, 0.4);
+//                         NSData *data8 = UIImageJPEGRepresentation(image, 0.3);
+//                         NSData *data9 = UIImageJPEGRepresentation(image, 0.2);
+//                         NSData *data10 = UIImageJPEGRepresentation(image, 0.1);
+//                         NSData *data11 = UIImageJPEGRepresentation(image, 0.05);
+//                         NSData *data12 = UIImageJPEGRepresentation(image, 0.01);
 
                          NSString *filePath = [self persistFile:data];
                          if (filePath == nil) {
