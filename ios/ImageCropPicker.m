@@ -259,7 +259,7 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
     loadingLabel.center = loadingLabelLocation;
     loadingLabel.textAlignment = UITextAlignmentCenter;
     loadingLabel.text = @"正在处理...";
-    [loadingLabel setFont:[UIFont boldSystemFontOfSize:18]];
+    [loadingLabel setFont:[UIFont boldSystemFontOfSize:16]];
     [loadingView addSubview:loadingLabel];
 
     // show all
@@ -336,6 +336,30 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
              };
 }
 
+- (NSData *)compressImageData: (NSData *)imageData {
+    UIImage *image = [UIImage imageWithData:imageData];
+    int pixels = image.size.height * image.size.width;
+    float ratio = 1;
+    if (pixels <= 1000000) {
+        ratio = 0.9;
+    } else {
+        ratio = 1000000/pixels;
+    }
+    NSData *data = UIImageJPEGRepresentation(image, ratio);
+    //                         NSData *data2 = UIImageJPEGRepresentation(image, 0.9);
+    //                         NSData *data3 = UIImageJPEGRepresentation(image, 0.8);
+    //                         NSData *data4 = UIImageJPEGRepresentation(image, 0.7);
+    //                         NSData *data5 = UIImageJPEGRepresentation(image, 0.6);
+    //                         NSData *data6 = UIImageJPEGRepresentation(image, 0.5);
+    //                         NSData *data7 = UIImageJPEGRepresentation(image, 0.4);
+    //                         NSData *data8 = UIImageJPEGRepresentation(image, 0.3);
+    //                         NSData *data9 = UIImageJPEGRepresentation(image, 0.2);
+    //                         NSData *data10 = UIImageJPEGRepresentation(image, 0.1);
+    //                         NSData *data11 = UIImageJPEGRepresentation(image, 0.05);
+    //                         NSData *data12 = UIImageJPEGRepresentation(image, 0.01);
+    return data;
+}
+
 - (void)qb_imagePickerController:
 (QBImagePickerController *)imagePickerController
           didFinishPickingAssets:(NSArray *)assets {
@@ -378,26 +402,7 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
                      requestImageDataForAsset:phAsset
                      options:options
                      resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                         UIImage *image = [UIImage imageWithData:imageData];
-                         int pixels = image.size.height * image.size.width;
-                         float ratio = 1;
-                         if (pixels <= 1000000) {
-                             ratio = 0.9;
-                         } else {
-                             ratio = 1000000/pixels;
-                         }
-                         NSData *data = UIImageJPEGRepresentation(image, ratio);
-//                         NSData *data2 = UIImageJPEGRepresentation(image, 0.9);
-//                         NSData *data3 = UIImageJPEGRepresentation(image, 0.8);
-//                         NSData *data4 = UIImageJPEGRepresentation(image, 0.7);
-//                         NSData *data5 = UIImageJPEGRepresentation(image, 0.6);
-//                         NSData *data6 = UIImageJPEGRepresentation(image, 0.5);
-//                         NSData *data7 = UIImageJPEGRepresentation(image, 0.4);
-//                         NSData *data8 = UIImageJPEGRepresentation(image, 0.3);
-//                         NSData *data9 = UIImageJPEGRepresentation(image, 0.2);
-//                         NSData *data10 = UIImageJPEGRepresentation(image, 0.1);
-//                         NSData *data11 = UIImageJPEGRepresentation(image, 0.05);
-//                         NSData *data12 = UIImageJPEGRepresentation(image, 0.01);
+                         NSData *data = [self compressImageData:imageData];
 
                          NSString *filePath = [self persistFile:data];
                          if (filePath == nil) {
