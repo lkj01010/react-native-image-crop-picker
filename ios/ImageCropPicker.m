@@ -338,14 +338,10 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
 
 - (NSData *)compressImageData: (NSData *)imageData {
     UIImage *image = [UIImage imageWithData:imageData];
-    int pixels = image.size.height * image.size.width;
-    float ratio = 1;
-    if (pixels <= 1000000) {
-        ratio = 0.9;
-    } else {
-        ratio = 1000000/pixels;
-    }
-    NSData *data = UIImageJPEGRepresentation(image, ratio);
+    return [self compressImage: image];
+}
+
+- (NSData *)compressImage: (UIImage *)image {
     //                         NSData *data2 = UIImageJPEGRepresentation(image, 0.9);
     //                         NSData *data3 = UIImageJPEGRepresentation(image, 0.8);
     //                         NSData *data4 = UIImageJPEGRepresentation(image, 0.7);
@@ -357,6 +353,36 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
     //                         NSData *data10 = UIImageJPEGRepresentation(image, 0.1);
     //                         NSData *data11 = UIImageJPEGRepresentation(image, 0.05);
     //                         NSData *data12 = UIImageJPEGRepresentation(image, 0.01);
+    float originalHeight =  image.size.height;
+    float originalWidth =  image.size.width;
+    float hh = 800.f;//这里设置高度为800f
+    float ww = 800.f;//这里设置宽度为480f
+    //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
+    float be = 1;//be=1表示不缩放
+    if (originalWidth > originalHeight && originalWidth > ww) {//如果宽度大的话根据宽度固定大小缩放
+        be = originalWidth / ww;
+    } else if (originalWidth < originalHeight && originalHeight > hh) {//如果高度高的话根据宽度固定大小缩放
+        be = originalHeight / hh;
+    }
+    if (be <= 0)
+        be = 1;
+    
+    float newHeight = originalHeight / be;
+    float newWidth = originalWidth / be;
+    
+    // 压缩尺寸
+    UIGraphicsBeginImageContext(CGSizeMake(newWidth,newHeight));
+    [image drawInRect:CGRectMake(0,0,newWidth,newHeight)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+//   压缩大小
+    float ratio = 0.9f;
+    float minRatio = 0.1f;
+    NSData *data = UIImageJPEGRepresentation(newImage, ratio);
+    while(data.length > 50 * 1024 && ratio > minRatio) {
+        ratio -= 0.1f;
+        data = UIImageJPEGRepresentation(newImage, ratio);
+    }
     return data;
 }
 
@@ -496,7 +522,8 @@ RCT_EXPORT_METHOD(openPicker:(NSDictionary *)options
             });
         }];
     } else {
-        NSData *data = UIImageJPEGRepresentation(image, 1);
+//        NSData *data = UIImageJPEGRepresentation(image, 1);
+        NSData *data = [self compressImage: image];
         NSString *filePath = [self persistFile:data];
         if (filePath == nil) {
             self.reject(ERROR_CANNOT_SAVE_IMAGE_KEY, ERROR_CANNOT_SAVE_IMAGE_MSG, nil);
